@@ -16,10 +16,10 @@
        custom_name = QPP_Constants::settings['type_custom_field_name']
        if @project
          query_default_name = QPP_Constants::settings['my_default_query_name']
-         @query = Query.first(:conditions => ["name = ? AND project_id = ? AND user_id = ?",query_default_name, @project.id, User.current.id])
+         @query = Query.where("name = ? AND project_id = ? AND user_id = ?",query_default_name, @project.id, User.current.id).first
          unless @query
            query_default_name = QPP_Constants::settings['default_query_name']
-           @query = Query.first(:conditions => ["name = ? AND project_id = ?",query_default_name, @project.id])
+           @query = Query.where("name = ? AND project_id = ?",query_default_name, @project.id).first
          end
          unless @query
            if prj
@@ -27,14 +27,14 @@
                true if custom_value.custom_field.name == custom_name && !custom_value.value.blank?
              end
              template_str = ( cv ? cv.value.to_s.strip : QPP_Constants::PROJECT_DEFAULT_SUFFIX )
-             @query = Query.first(:conditions => ["name = ? AND project_id = ?",QPP_Constants::QUERY_DEFAULT_PFX + template_str,prj.id] )
+             @query = Query.where("name = ? AND project_id = ?",QPP_Constants::QUERY_DEFAULT_PFX + template_str,prj.id).first
            end
          end
        else
          query_default_name = QPP_Constants::settings['my_global_query_name']
-         @query = Query.first(:conditions => ["name = ? AND project_id IS NULL AND user_id = ?",query_default_name, User.current.id])
+         @query = Query.where("name = ? AND project_id IS NULL AND user_id = ?",query_default_name, User.current.id).first
          unless @query
-           @query = Query.first(:conditions => ["name = ? AND project_id IS NULL",QPP_Constants::QUERY_DEFAULT_GLOBAL_NAME] ) if prj
+           @query = Query.where("name = ? AND project_id IS NULL",QPP_Constants::QUERY_DEFAULT_GLOBAL_NAME).first if prj
          end
        end
        if @query
